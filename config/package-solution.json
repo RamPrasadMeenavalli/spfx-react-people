@@ -1,0 +1,26 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "spfx-react-people-client-side-solution",
+    "id": "500b6072-2b6a-4c1e-8c28-ca7d95a79cb8",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": ""
+    },
+    "webApiPermissionRequests": [
+      {
+        "resource": "Microsoft Graph",
+        "scope": "People.Read.All"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/spfx-react-people.sppkg"
+  }
+}

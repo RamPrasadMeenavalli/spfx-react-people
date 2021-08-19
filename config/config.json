@@ -1,0 +1,19 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "people-explorer-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/peopleExplorer/PeopleExplorerWebPart.js",
+          "manifest": "./src/webparts/peopleExplorer/PeopleExplorerWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "PeopleExplorerWebPartStrings": "lib/webparts/peopleExplorer/loc/{locale}.js",
+    "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js"
+  }
+}

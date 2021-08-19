@@ -1,0 +1,38 @@
+.peopleExplorer {
+    .container {
+        padding: 0px;
+    }
+    .peopleCard{
+        padding:1rem;
+        border:1px solid #eaeaea;
+        border-radius:2px;
+        font-size: medium;
+        &:hover{
+            border:1px solid #000;
+        }
+    }
+    .closeButton{
+        float: right;
+        top: -1rem;
+        right: -1rem;
+
+    }
+
+    /*Reuseable styles*/
+    .stackHorizontal{
+        display: flex;
+        align-items: center;
+    }
+    .stackVertical{
+        display: flex;
+        flex-direction: column;
+    }
+    .userImage{
+        border-radius: 50%;
+        align-self: center;
+    }
+    .infoLine{
+        font-size: 0.8rem;
+        color: gray;
+    }
+}
