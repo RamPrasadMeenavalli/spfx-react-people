@@ -11,6 +11,8 @@ import { Icon, IconButton, IPersonaProps, ISize, Shimmer, Text } from 'office-ui
 import { graph } from '@pnp/graph';
 import '@pnp/graph/users';
 import * as Handlebars from 'handlebars';
+import { sp } from "@pnp/sp";
+import "@pnp/sp/profiles";
 
 
 export const PeopleExplorer:React.FC<IPeopleExplorerProps> = (props) => {
@@ -30,19 +32,32 @@ export const PeopleExplorer:React.FC<IPeopleExplorerProps> = (props) => {
   const onPeopleSelected = async (values:IPersonaProps[]) => {
     if(values && values.length > 0) {
       let _allPeople = [...people];
+      
       const _person = values[0];
       const index = _allPeople.push({...values[0], loading:true});
       setPeople(_allPeople);
       setShowPicker(false);
 
-      const persons = await graph.me.people.search(_person.secondaryText).get();
-      const user = persons && persons.length > 0 ? persons[0] : {};
+      // Get person details from Graph API
+      // const persons = await graph.me.people.search(_person.secondaryText).get();
+      // const user = persons && persons.length > 0 ? persons[0] : {};
+
+      // Get person details from SP User Profile
+      let user = await sp.profiles.getPropertiesFor(_person["loginName"]);
+      const userProps = [...user.UserProfileProperties];
+      userProps.forEach(p => {
+        user[p.Key] = p.Value;
+      });
+      user.UserProfileProperties = [];
+
       const _p = {
         imageInitials: _person.imageInitials,
         imageUrl: _person.imageUrl,
         mail: _person.secondaryText,
         ...user
       }
+
+      console.debug(_p);
 
       _allPeople.splice(index -1, 1, _p);
       setPeople(_allPeople);

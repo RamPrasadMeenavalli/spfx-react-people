@@ -14,6 +14,7 @@ import { IPeopleExplorerProps } from './components/IPeopleExplorerProps';
 import { graph } from "@pnp/graph";
 import { initializeIcons } from 'office-ui-fabric-react';
 import { HandleBarTemplates } from './HandleBarTemplates';
+import { sp } from '@pnp/sp';
 
 initializeIcons();
 
@@ -29,6 +30,9 @@ export default class PeopleExplorerWebPart extends BaseClientSideWebPart<IPeople
   public onInit(): Promise<void> {
     return super.onInit().then(_ => {
       graph.setup({
+        spfxContext: this.context
+      });
+      sp.setup({
         spfxContext: this.context
       });
     });

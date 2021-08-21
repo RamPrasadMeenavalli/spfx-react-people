@@ -12,15 +12,13 @@ export const HandleBarTemplates = {
                         width="75px"
                         />
 
-                        <div><b>{{displayName}}</b></div>
-                        <div class={{styles.infoLine}}>{{jobTitle}}</div>
-                        <div class={{styles.infoLine}}>{{mail}}</div>
+                        <div><b>{{DisplayName}}</b></div>
+                        <div class={{styles.infoLine}}>{{Title}}</div>
+                        <div class={{styles.infoLine}}>{{Email}}</div>
 
-                        <div class={{styles.infoLine}}>Department : {{department}}</div>
-                        <div class={{styles.infoLine}}>Office : {{officeLocation}}</div>
-                        {{#each phones}}
-                            <div class={{../styles.infoLine}}>{{this.type}} : {{this.number}}</div>
-                        {{/each}}
+                        <div class={{styles.infoLine}}>Department : {{Department}}</div>
+                        <div class={{styles.infoLine}}>Office : {{Office}}</div>
+                        <div class={{styles.infoLine}}>Work Phone : {{this.WorkPhone}}</div>
                 </div>`
                 break;
             case "simple":
@@ -33,8 +31,8 @@ export const HandleBarTemplates = {
                     width="50px"
                     />
                     <div class={{styles.stackVertical}}>
-                        <div><b>{{displayName}}</b></div>
-                        <div class={{styles.infoLine}}>{{jobTitle}}</div>
+                        <div><b>{{DisplayName}}</b></div>
+                        <div class={{styles.infoLine}}>{{Title}}</div>
                     </div>
                     
                 </div>`;
