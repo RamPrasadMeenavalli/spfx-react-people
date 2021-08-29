@@ -7,13 +7,13 @@ import { PeoplePicker } from '@pnp/spfx-controls-react/lib/PeoplePicker';
 import { DisplayMode } from '@microsoft/sp-core-library';
 import { PrincipalType } from '@pnp/spfx-controls-react/lib/PeoplePicker';
 import { GridLayout } from "@pnp/spfx-controls-react/lib/GridLayout";
-import { Icon, IconButton, IPersonaProps, ISize, Shimmer, Text } from 'office-ui-fabric-react';
+import { Icon, IconButton, IPersonaProps, ISize, Shimmer } from 'office-ui-fabric-react';
 import { graph } from '@pnp/graph';
 import '@pnp/graph/users';
 import * as Handlebars from 'handlebars';
 import { sp } from "@pnp/sp";
 import "@pnp/sp/profiles";
-import { peoplePickerPersonaContent } from 'office-ui-fabric-react/lib/components/ExtendedPicker/PeoplePicker/ExtendedPeoplePicker.scss';
+import { PnPClientStorage } from '@pnp/common';
 
 
 export const PeopleExplorer:React.FC<IPeopleExplorerProps> = (props) => {
@@ -24,6 +24,7 @@ export const PeopleExplorer:React.FC<IPeopleExplorerProps> = (props) => {
   const [peopleInfo, setPeopleInfo] = useState<any[]>([]);
 
   const handleBarTemplate = Handlebars.compile(props.template);
+  const _storage:PnPClientStorage = new PnPClientStorage();
 
   useEffect(() => {
     setDisplayMode(props.displayMode);
@@ -37,28 +38,36 @@ export const PeopleExplorer:React.FC<IPeopleExplorerProps> = (props) => {
     // const user = persons && persons.length > 0 ? persons[0] : {};
 
     // Get person details from SP User Profile
-    let _peopleInfo = [...people];
-    Promise.all(people.map((p, index) => {
-      return sp.profiles.getPropertiesFor(p["loginName"]).then(user => {
-        const userProps = [...user.UserProfileProperties];
-        userProps.forEach(p => {
-          user[p.Key] = p.Value;
+    // Check if data available in session storage
+    _storage.session.getOrPut(`peopleExplorerData|${props.context.instanceId}`, () => {
+      return new Promise((resolve, reject) => {
+        let _peopleInfo = people.map(p => ({ ...p, loading:true}));
+        setPeopleInfo([..._peopleInfo]);
+        Promise.all(people.map((p, index) => {
+          return sp.profiles.getPropertiesFor(p["loginName"]).then(user => {
+            const userProps = [...user.UserProfileProperties];
+            userProps.forEach(p => {
+              user[p.Key] = p.Value;
+            });
+            user.UserProfileProperties = [];
+    
+    
+            const _p = {
+              imageInitials: p.imageInitials,
+              imageUrl: p.imageUrl,
+              mail: p.secondaryText,
+              id: p.secondaryText,
+              ...user
+            }
+            _peopleInfo[index] = _p;
+          });
+        })).then(() => {
+          resolve(_peopleInfo);
         });
-        user.UserProfileProperties = [];
-
-
-        const _p = {
-          imageInitials: p.imageInitials,
-          imageUrl: p.imageUrl,
-          mail: p.secondaryText,
-          id: p.secondaryText,
-          ...user
-        }
-        _peopleInfo[index] = _p;
       });
-    })).then(() => {
-      setPeopleInfo(_peopleInfo);
-    })
+    }).then((peopleInfo:any[]) => {
+      setPeopleInfo([...peopleInfo]);
+    });
   }, [])
 
   const onPeopleSelected = async (values:IPersonaProps[]) => {
@@ -97,6 +106,10 @@ export const PeopleExplorer:React.FC<IPeopleExplorerProps> = (props) => {
 
       _currentPeopleInfo.splice(index -1, 1, _p);
       setPeopleInfo(_currentPeopleInfo);
+
+      // Clear the cache
+      _storage.session.delete(`peopleExplorerData|${props.context.instanceId}`);
+
       setShowPicker(true);
     }
   }
@@ -117,13 +130,16 @@ export const PeopleExplorer:React.FC<IPeopleExplorerProps> = (props) => {
       setPeople(_p);
       setPeopleInfo(_peopleInfo);
       props.updatePeople(_p);
+      
+      // Clear the cache
+      _storage.session.delete(`peopleExplorerData|${props.context.instanceId}`);
+
     }
   }
 
   const onRenderGridItem = (item: any, finalSize: ISize, isCompact: boolean): JSX.Element => {
     if(item == "newitem") {
       return <div
-      style={{height:finalSize.height}}
       className={styles.peopleCard}
       data-is-focusable={true}
       role="listitem"
@@ -153,7 +169,7 @@ export const PeopleExplorer:React.FC<IPeopleExplorerProps> = (props) => {
           <Icon iconName="ChromeClose"></Icon>
         </IconButton>
       )}
-      <div dangerouslySetInnerHTML={{ __html:handleBarTemplate({...item, styles:styles}) }} />
+      <div style={{marginBottom:"20px"}} dangerouslySetInnerHTML={{ __html:handleBarTemplate({...item, styles:styles}) }} />
       {item.loading && (
         <Shimmer style={{marginTop:"1rem"}}></Shimmer>
       )}
@@ -167,6 +183,9 @@ export const PeopleExplorer:React.FC<IPeopleExplorerProps> = (props) => {
       updateProperty={props.updateTitle} />
 
       <GridLayout
+        listProps={{
+          className: styles.listStyle,
+        }}
         ariaLabel="List of content, use right and left arrow keys to navigate, arrow down to access details."
         items={displayMode == DisplayMode.Edit && showPicker ? [...peopleInfo, "newitem"] : peopleInfo}
         onRenderGridItem={(item: any, finalSize: ISize, isCompact: boolean) => onRenderGridItem(item, finalSize, isCompact)}

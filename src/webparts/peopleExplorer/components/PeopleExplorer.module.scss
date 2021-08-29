@@ -3,19 +3,31 @@
         padding: 0px;
     }
     .peopleCard{
-        padding:1rem;
+        padding:20px;
         border:1px solid #eaeaea;
         border-radius:2px;
         font-size: medium;
         &:hover{
             border:1px solid #000;
         }
+        height: calc(100% - 60px);
     }
     .closeButton{
         float: right;
         top: -1rem;
         right: -1rem;
 
+    }
+
+    .listStyle {
+        :global(.ms-List-page){
+            display:flex;
+            align-items: stretch;
+            flex-wrap: wrap;
+        }
+        :global(.ms-List-cell > div) {
+            height: 100%;
+        }
     }
 
     /*Reuseable styles*/
