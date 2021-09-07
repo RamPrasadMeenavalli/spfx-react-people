@@ -35,6 +35,11 @@ export default class PeopleExplorerWebPart extends BaseClientSideWebPart<IPeople
       sp.setup({
         spfxContext: this.context
       });
+
+      // Assign a default value to customTemplate
+      if(!(this.properties.customTemplate && this.properties.customTemplate.length > 0)){
+        this.properties.customTemplate = HandleBarTemplates.getTemplate("detailed");
+      }
     });
   }
 
