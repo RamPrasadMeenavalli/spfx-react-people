@@ -18,6 +18,8 @@ import { PnPClientStorage } from '@pnp/common';
 
 export const PeopleExplorer:React.FC<IPeopleExplorerProps> = (props) => {
 
+  const CACHE_KEY:string = `peopleExplorerData|${props.context.instanceId}|${props.context.pageContext.listItem.id}`;
+
   const [displayMode, setDisplayMode] = useState<DisplayMode>(props.displayMode);
   const [showPicker, setShowPicker] = useState<boolean>(true);
   const [people, setPeople] = useState<any[]>(props.people);
@@ -39,7 +41,7 @@ export const PeopleExplorer:React.FC<IPeopleExplorerProps> = (props) => {
 
     // Get person details from SP User Profile
     // Check if data available in session storage
-    _storage.session.getOrPut(`peopleExplorerData|${props.context.instanceId}`, () => {
+    _storage.session.getOrPut(CACHE_KEY, () => {
       return new Promise((resolve, reject) => {
         let _peopleInfo = people.map(p => ({ ...p, loading:true}));
         setPeopleInfo([..._peopleInfo]);
@@ -108,7 +110,7 @@ export const PeopleExplorer:React.FC<IPeopleExplorerProps> = (props) => {
       setPeopleInfo(_currentPeopleInfo);
 
       // Clear the cache
-      _storage.session.delete(`peopleExplorerData|${props.context.instanceId}`);
+      _storage.session.delete(CACHE_KEY);
 
       setShowPicker(true);
     }
@@ -132,7 +134,7 @@ export const PeopleExplorer:React.FC<IPeopleExplorerProps> = (props) => {
       props.updatePeople(_p);
       
       // Clear the cache
-      _storage.session.delete(`peopleExplorerData|${props.context.instanceId}`);
+      _storage.session.delete(CACHE_KEY);
 
     }
   }
